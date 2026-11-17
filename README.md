@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Design Factory: front end
 
-## Getting Started
+Web front end for **Design Factory**, a platform for learning software design patterns, built as my MBA capstone project (TCC) in Software Engineering at USP/ESALQ.
 
-First, run the development server:
+Students sign up, follow guided learning tracks, write and run Java code right in the browser, and answer a quiz at the end of each track. The API lives in [design-patterns-factory-backend](https://github.com/guerrasz/design-patterns-factory-backend).
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+> The course content is in Brazilian Portuguese.
+
+## Features
+
+- **Learning tracks:** an introduction track plus one track each for the **Factory**, **Adapter** and **Singleton** patterns, with six lessons per pattern track
+- **In-browser Java editor:** a Monaco editor with a console that runs your code through the [Piston](https://github.com/engineer-man/piston) code execution API
+- **Quizzes** to close each pattern track
+- **Progress tracking:** per-track progress bars and experience points on the profile page
+- **Accounts:** sign-up, login and a cookie-based session
+
+## Stack
+
+- Next.js 15 (App Router) and React 19
+- TypeScript
+- Tailwind CSS 4 and shadcn/ui (Radix UI)
+- React Hook Form and Zod for form validation
+- Monaco Editor
+- Axios
+- Docker (standalone Next.js output)
+
+## Project structure
+
+```
+src/
+├── app/
+│   ├── api/          Route handlers: login, signup, session, class progress
+│   ├── tracks/       intro, factory, adapter and singleton tracks, lessons and quizzes
+│   ├── login/  signup/  profile/
+│   └── page.tsx      Home
+├── components/
+│   ├── internal/     Code editor, console, runner, quiz, track and lesson components
+│   └── ui/           shadcn/ui components
+├── _clients/         backend.ts (Spring Boot API) and piston.ts (code execution)
+└── _utils/           Session handling and progress calculation
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Running locally
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+You need Node.js 22 and the [backend](https://github.com/guerrasz/design-patterns-factory-backend) running on port 8080.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm install
+API_ENDPOINT=localhost npm run dev
+```
 
-## Learn More
+Then open http://localhost:3000.
 
-To learn more about Next.js, take a look at the following resources:
+`API_ENDPOINT` is the hostname of the API; the app calls `http://$API_ENDPOINT:8080`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Full stack with Docker Compose
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The backend repository has a `compose.yml` that starts PostgreSQL, the API and this front end together:
 
-## Deploy on Vercel
+```bash
+git clone https://github.com/guerrasz/design-patterns-factory-backend
+cd design-patterns-factory-backend
+docker compose up
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Building the image
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+docker build -t next-designfactory .
+docker run -p 3000:3000 -e API_ENDPOINT=<api-host> next-designfactory
+```
